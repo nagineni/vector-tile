@@ -18,20 +18,6 @@ using optional = std::experimental::optional<T>;
 
 namespace mapbox { namespace vector_tile {
 
-using point_type = mapbox::geometry::point<std::int16_t>;
-
-class points_array_type : public std::vector<point_type> {
-public:
-    using coordinate_type = point_type::coordinate_type;
-    using std::vector<point_type>::vector;
-};
-
-class points_arrays_type : public std::vector<points_array_type> {
-public:
-    using coordinate_type = points_array_type::coordinate_type;
-    using std::vector<points_array_type>::vector;
-};
-
 class layer;
 
 class feature {
@@ -137,7 +123,7 @@ inline feature::feature(protozero::data_view const& feature_view, layer const& l
     while (feature_pbf.next()) {
         switch (feature_pbf.tag()) {
         case FeatureType::ID:
-            id = { feature_pbf.get_uint64() };
+            id = optional<mapbox::geometry::identifier> { feature_pbf.get_uint64() };
             break;
         case FeatureType::TAGS:
             tags_iter = feature_pbf.get_packed_uint32();
